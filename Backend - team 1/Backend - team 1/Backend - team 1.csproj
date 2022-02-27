@@ -39,10 +39,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Properties\Features\Clients" />
-      <Folder Include="Properties\Features\Migrations" />
-      <Folder Include="Properties\Features\Projects" />
-      <Folder Include="Properties\Features\Workshops" />
+      <Folder Include="Base" />
     </ItemGroup>
 
 </Project>

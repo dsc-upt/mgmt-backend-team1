@@ -1,4 +1,4 @@
-using Backend___team_1.Features.Database;
+using Backend___team_1.Database;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

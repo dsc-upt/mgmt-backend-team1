@@ -1,11 +1,11 @@
 using Backend___team_1.Base.Entities;
-using Backend___team_1.Features.UserProfiles;
+using Backend___team_1.Features.Users;
 
 namespace Backend___team_1.Features.Workshops;
 
 public class Workshop : Entity
 {
-    public UserProfile Trainer { get; set; }
+    public User Trainer { get; set; }
     
     public string Topic { get; set; }
     
@@ -21,7 +21,7 @@ public class Workshop : Entity
     
     public string Location { get; set; }
     
-    public UserProfile[] Participants { get; set; }
+    public User[] Participants { get; set; }
 
     public string Presentation { get; set; }
 }

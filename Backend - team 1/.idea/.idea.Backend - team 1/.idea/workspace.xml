@@ -21,6 +21,9 @@
     <option name="WARN_ABOUT_CRLF" value="false" />
     <option name="WARN_ABOUT_DETACHED_HEAD" value="false" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/5fd9ff3950cc6fe36d7d74bfe94e0d4c632ad467b1cb0462447d8f3f5f824/Migration.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -95,7 +98,8 @@
       <workItem from="1645964808159" duration="1847000" />
       <workItem from="1645969812596" duration="1916000" />
       <workItem from="1645973199712" duration="1113000" />
-      <workItem from="1645974713659" duration="322000" />
+      <workItem from="1645974713659" duration="2396000" />
+      <workItem from="1646227889553" duration="354000" />
     </task>
     <servers />
   </component>

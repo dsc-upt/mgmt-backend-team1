@@ -1,4 +1,5 @@
 using Backend___team_1.Base.Entities;
+using Backend___team_1.Base.Files;
 using Backend___team_1.Features.Users;
 
 namespace Backend___team_1.Features.Workshops;
@@ -11,7 +12,7 @@ public class Workshop : Entity
     
     public string Description { get; set; }
     
-    public string CoverImage { get; set; }
+    public FileModel CoverImage { get; set; }
     
     public DateTime DateStart { get; set; }
     
@@ -23,5 +24,5 @@ public class Workshop : Entity
     
     public User[] Participants { get; set; }
 
-    public string Presentation { get; set; }
+    public FileModel Presentation { get; set; }
 }

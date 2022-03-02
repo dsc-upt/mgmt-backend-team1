@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 using Backend___team_1.Base.Entities;
+using Backend___team_1.Base.Files;
 using Backend___team_1.Features.Users;
 using Backend___team_1.Features.Teams;
 
@@ -19,5 +19,5 @@ public class UserProfile : Entity
     
     public DateOnly Birthday { get; set; }
     
-    public string Photo { get; set; }
+    public FileModel Photo { get; set; }
 }

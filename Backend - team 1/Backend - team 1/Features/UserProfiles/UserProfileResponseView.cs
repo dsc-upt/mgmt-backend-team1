@@ -5,6 +5,8 @@ namespace Backend___team_1.Features.UserProfiles;
 
 public class UserProfileResponseView
 {
+    public string Id { get; set; }
+    
     public UserResponseView User { get; set; }
     
     public ICollection<TeamResponseView> TeamList { get; set; }
@@ -13,5 +15,5 @@ public class UserProfileResponseView
     
     public DateOnly Birthday { get; set; }
     
-    public string  Photo { get; set; }
+    public string PhotoPath { get; set; }
 }

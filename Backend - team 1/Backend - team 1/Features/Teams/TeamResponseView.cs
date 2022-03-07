@@ -1,12 +1,14 @@
 using Backend___team_1.Features.UserProfiles;
+using Backend___team_1.Features.Users;
 
 namespace Backend___team_1.Features.Teams;
 
 public class TeamResponseView
 {
+    public string Id { get; set; }
     public string Name { get; set; }
     
     public string GitHubLink { get; set; }
     
-    public UserProfile TeamLead { get; set; }
+    public UserResponseView TeamLead { get; set; }
 }

@@ -7,7 +7,7 @@ public class UserProfileRequestView
     [Required]
     public string UserId { get; set; }
     
-    public ICollection<string> TeamList { get; set; }
+    public ICollection<string> TeamsIds { get; set; }
     
     public string FacebookLink { get; set; }
     
@@ -18,6 +18,5 @@ public class UserProfileRequestView
     [Required]
     public DateOnly Birthday { get; set; }
     
-    [Required]
-    public string PhotoPath { get; set; }
+    public string PhotoId { get; set; }
 }

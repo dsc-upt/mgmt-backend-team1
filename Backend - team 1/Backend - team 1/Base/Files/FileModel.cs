@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Backend___team_1.Base.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend___team_1.Base.Files;
 
-public class FileModel
+public class FileModel : Entity
 {
     public string Name { get; set; }
     

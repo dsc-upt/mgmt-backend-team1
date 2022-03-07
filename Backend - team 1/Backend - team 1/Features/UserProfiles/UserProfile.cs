@@ -12,12 +12,12 @@ public class UserProfile : Entity
     
     public ICollection<Team> Teams { get; set; }
     
-    public string FacebookLink { get; set; }
+    public string? FacebookLink { get; set; }
     
     [Phone]
     public string Phone { get; set; }
     
     public DateOnly Birthday { get; set; }
     
-    public FileModel Photo { get; set; }
+    public FileModel? Photo { get; set; }
 }

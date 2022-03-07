@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend___team_1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220307181039_NewDb")]
-    partial class NewDb
+    [Migration("20220307184308_NewWorkshopDbSet")]
+    partial class NewWorkshopDbSet
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -108,9 +108,8 @@ namespace Backend___team_1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp with time zone");
@@ -266,6 +265,9 @@ namespace Backend___team_1.Migrations
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("MaxCapacity")
+                        .HasColumnType("integer");
 
                     b.Property<string>("PresentationId")
                         .IsRequired()

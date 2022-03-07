@@ -2,6 +2,7 @@ namespace Backend___team_1.Features.Users;
 
 public class UserResponseView
 {
+    public string Id { get; set; }
     public string FirstName { get; set; }
     
     public string LastName { get; set; }

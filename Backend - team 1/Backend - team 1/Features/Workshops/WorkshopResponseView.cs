@@ -1,18 +1,18 @@
-using Backend___team_1.Base.Entities;
-using Backend___team_1.Base.Files;
 using Backend___team_1.Features.Users;
 
 namespace Backend___team_1.Features.Workshops;
 
-public class Workshop : Entity
+public class WorkshopResponseView
 {
-    public User Trainer { get; set; }
+    public string Id { get; set; }
+    
+    public UserResponseView Trainer { get; set; }
     
     public string Topic { get; set; }
     
-    public string? Description { get; set; }
+    public string Description { get; set; }
     
-    public FileModel? CoverImage { get; set; }
+    public string Coverpath { get; set; }
     
     public DateTime DateStart { get; set; }
     
@@ -24,7 +24,7 @@ public class Workshop : Entity
     
     public string Location { get; set; }
     
-    public User[] Participants { get; set; }
-
-    public FileModel? Presentation { get; set; }
+    public UserResponseView[] Participants { get; set; }
+    
+    public string PresentationPath { get; set; }
 }

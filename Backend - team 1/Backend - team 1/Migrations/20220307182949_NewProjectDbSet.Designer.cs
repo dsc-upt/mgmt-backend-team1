@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Backend___team_1.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend___team_1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220307182949_NewProjectDbSet")]
+    partial class NewProjectDbSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,9 +108,8 @@ namespace Backend___team_1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp with time zone");
@@ -131,6 +132,7 @@ namespace Backend___team_1.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("GitHubLink")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -172,6 +174,7 @@ namespace Backend___team_1.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FacebookLink")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
@@ -179,6 +182,7 @@ namespace Backend___team_1.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhotoId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Updated")
@@ -242,6 +246,7 @@ namespace Backend___team_1.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("CoverImageId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
@@ -254,16 +259,15 @@ namespace Backend___team_1.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("MaxCapacity")
-                        .HasColumnType("integer");
-
                     b.Property<string>("PresentationId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Topic")
@@ -335,7 +339,9 @@ namespace Backend___team_1.Migrations
                 {
                     b.HasOne("Backend___team_1.Base.Files.FileModel", "Photo")
                         .WithMany()
-                        .HasForeignKey("PhotoId");
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend___team_1.Features.Users.User", "User")
                         .WithMany()
@@ -357,11 +363,15 @@ namespace Backend___team_1.Migrations
                 {
                     b.HasOne("Backend___team_1.Base.Files.FileModel", "CoverImage")
                         .WithMany()
-                        .HasForeignKey("CoverImageId");
+                        .HasForeignKey("CoverImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend___team_1.Base.Files.FileModel", "Presentation")
                         .WithMany()
-                        .HasForeignKey("PresentationId");
+                        .HasForeignKey("PresentationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Backend___team_1.Features.Users.User", "Trainer")
                         .WithMany()

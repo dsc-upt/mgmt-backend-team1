@@ -16,7 +16,7 @@ public class UsersController : Controller
     }
 
     [HttpPost]
-    public async Task<UserResponseView> Add(UserRequestView userRequest)
+    public async Task<UserResponseView> Add([FromBody]UserRequestView userRequest)
     {
         var user = new User()
         {
@@ -33,6 +33,7 @@ public class UsersController : Controller
 
         return new UserResponseView
         {
+            Id = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
@@ -46,6 +47,7 @@ public class UsersController : Controller
         return _appDbContext.Users.Select(
             user => new UserResponseView
             {
+                Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
@@ -53,86 +55,94 @@ public class UsersController : Controller
             }
         ).ToList();
     }
-
-    public async Task<UserResponseView> GetById([FromRoute] string id)
+    
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UserResponseView>> GetById([FromRoute] string id)
     {
         var user = await _appDbContext.Users.FirstOrDefaultAsync(entity => entity.Id == id);
         if (user == null)
         {
-            throw new ArgumentException("Id not found in database.");
+            return NotFound("Id not found in database");
         }
-        return new UserResponseView
+
+        return Ok(new UserResponseView
         {
+            Id = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
             Roles = user.Roles,
-        };
+        });
     }
 
-    [HttpDelete]
-    public async Task<User> Delete([FromRoute] string id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<User>> Delete([FromRoute] string id)
     {
         var user = await _appDbContext.Users.FirstOrDefaultAsync(entity => entity.Id == id);
         if (user == null)
         {
-            throw new ArgumentException("Id not found in database.");
+            return NotFound("Id not found in database");
         }
 
         var result = _appDbContext.Users.Remove(user);
         await _appDbContext.SaveChangesAsync();
-        return result.Entity;
+        return Ok(result.Entity);
     }
 
-    [HttpPatch]
-    public async Task<UserResponseView> Update(UserRequestView userview, [FromRoute]string id)
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<UserResponseView>> Update([FromBody]UserRequestView userview, [FromRoute]string id)
     {
         var user = await _appDbContext.Users.FirstOrDefaultAsync(user => user.Id == id);
         if (user == null)
         {
-            throw new AggregateException("Id not found in databse");
+            return NotFound("Id not found in database");
         }
-
+        
         user.FirstName = userview.FirstName;
         user.LastName = userview.LastName;
         user.Email = userview.Email;
         user.Roles = userview.Roles;
         user.Updated = DateTime.UtcNow;
-        return new UserResponseView
+
+        await _appDbContext.SaveChangesAsync();
+
+        return Ok(new UserResponseView
         {
+            Id = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
             Roles = user.Roles,
-        };
+        });
     }
 
-    [HttpPatch]
-    public async Task<UserResponseView> AddRole([FromRoute] string role, [FromRoute] string id)
+    [HttpPost("{id}/{role}")]
+    public async Task<ActionResult<UserResponseView>> AddRole([FromRoute] string role, [FromRoute] string id)
     {
         var user = await _appDbContext.Users.FirstOrDefaultAsync(entity => entity.Id == id);
         if (user == null)
         {
-            throw new ArgumentException("Id not found in database");
+            return NotFound("Id not found in database");
         }
         user.Roles.Add(role);
         await _appDbContext.SaveChangesAsync();
-        return new UserResponseView
+        return Ok(new UserResponseView
         {
+            Id = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
             Roles = user.Roles,
-        };
+        });
     }
     
-    [HttpPatch]
-    public async Task<UserResponseView> RemoveRole([FromRoute] string role, [FromRoute] string id)
+    [HttpDelete("{id}/{role}")]
+    public async Task<ActionResult<UserResponseView>> RemoveRole([FromRoute] string role, [FromRoute] string id)
     {
         var user = await _appDbContext.Users.FirstOrDefaultAsync(entity => entity.Id == id);
         if (user == null)
         {
-            throw new ArgumentException("Id not found in database");
+            return NotFound("Id not found in database");
         }
 
         var ok = user.Roles.Find(entity => entity == role);
@@ -142,12 +152,12 @@ public class UsersController : Controller
         }
         user.Roles.Remove(role);
         await _appDbContext.SaveChangesAsync();
-        return new UserResponseView
+        return Ok(new UserResponseView
         {
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
             Roles = user.Roles,
-        };
+        });
     }
 }

@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend___team_1.Base.Files;
 
-[Keyless]
-[NotMapped]
 public class FileModel
 {
     public string Name { get; set; }

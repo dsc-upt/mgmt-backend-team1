@@ -1,3 +1,4 @@
+using Backend___team_1.Base.Files;
 using Backend___team_1.Features.Clients;
 using Backend___team_1.Features.Projects;
 using Backend___team_1.Features.Teams;
@@ -11,7 +12,9 @@ namespace Backend___team_1.Database;
 public class AppDbContext : DbContext
 {
     public AppDbContext (DbContextOptions options) : base(options) {}
-
+    
+    public DbSet<FileModel> Files { get; set; }
+    
     public DbSet<User> Users { get; set; }
     
     public DbSet<Team> Teams { get; set; }

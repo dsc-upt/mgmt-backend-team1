@@ -16,4 +16,6 @@ public class UserProfileResponseView
     public DateOnly Birthday { get; set; }
     
     public string PhotoPath { get; set; }
+    
+    public string FacebookLink { get; set; }
 }

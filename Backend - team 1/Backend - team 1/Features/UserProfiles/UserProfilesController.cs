@@ -139,7 +139,7 @@ public class UserProfilesController : Controller
     [HttpGet("{id}")]
     public async Task<ActionResult<UserProfileResponseView>> GetById([FromRoute] string id)
     {
-        var userprofile = await _dbContext.UserProfiles.FirstOrDefaultAsync(entity => entity.Id == id);
+        var userprofile = await _dbContext.UserProfiles.Include(userprofile => userprofile.User).FirstOrDefaultAsync(entity => entity.Id == id);
         if (userprofile == null)
         {
             return NotFound("Id not found in database");

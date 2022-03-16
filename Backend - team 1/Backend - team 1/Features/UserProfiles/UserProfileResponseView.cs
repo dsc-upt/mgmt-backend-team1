@@ -13,7 +13,7 @@ public class UserProfileResponseView
     
     public string Phone { get; set; }
     
-    public DateOnly Birthday { get; set; }
+    public DateTime Birthday { get; set; }
     
     public string PhotoPath { get; set; }
     

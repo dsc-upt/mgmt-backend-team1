@@ -16,7 +16,7 @@ public class UserProfileRequestView
     public string Phone { get; set; }
     
     [Required]
-    public DateOnly Birthday { get; set; }
+    public DateTime Birthday { get; set; }
     
     public string PhotoId { get; set; }
 }

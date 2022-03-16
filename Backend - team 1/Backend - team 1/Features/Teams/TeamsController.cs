@@ -71,13 +71,13 @@ public class TeamsController : Controller
                     Roles = team.TeamLeader.Roles,
                 },
             }
-        ));
+        ).ToList());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<TeamResponseView>> GetById([FromRoute] string id)
     {
-        var team = await _dbContext.Teams.FirstOrDefaultAsync(t => t.Id == id);
+        var team = await _dbContext.Teams.Include(team => team.TeamLeader).FirstOrDefaultAsync(entity => entity.Id == id);
         if (team == null)
         {
             return NotFound("Id not found in database");

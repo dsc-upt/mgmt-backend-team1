@@ -154,6 +154,7 @@ public class UsersController : Controller
         await _appDbContext.SaveChangesAsync();
         return Ok(new UserResponseView
         {
+            Id = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,

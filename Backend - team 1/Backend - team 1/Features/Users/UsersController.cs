@@ -16,7 +16,7 @@ public class UsersController : Controller
     }
 
     [HttpPost]
-    public async Task<UserResponseView> Add([FromBody]UserRequestView userRequest)
+    public async Task<ActionResult<UserResponseView>> Add([FromBody]UserRequestView userRequest)
     {
         var user = new User()
         {
@@ -31,20 +31,20 @@ public class UsersController : Controller
         await _appDbContext.Users.AddAsync(user);
         await _appDbContext.SaveChangesAsync();
 
-        return new UserResponseView
+        return Ok(new UserResponseView
         {
             Id = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
             Roles = user.Roles,
-        };
+        });
     }
 
     [HttpGet]
-    public async Task<List<UserResponseView>> Get()
+    public async Task<ActionResult<UserResponseView>> Get()
     {
-        return _appDbContext.Users.Select(
+        return Ok(_appDbContext.Users.Select(
             user => new UserResponseView
             {
                 Id = user.Id,
@@ -53,7 +53,7 @@ public class UsersController : Controller
                 Email = user.Email,
                 Roles = user.Roles,
             }
-        ).ToList();
+        ).ToList());
     }
     
     [HttpGet("{id}")]

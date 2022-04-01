@@ -1,15 +1,17 @@
-using Backend___team_1.Base.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Backend___team_1.Base.Files;
 
-public class FileModel : Entity
+public class FileRequestView
 {
+    [Required]
     public string Name { get; set; }
     
     public string Path { get; set; }
     
+    [Required]
     public string Extension { get; set; }
-
-    public long Size { get; set; }
     
+    [Required]
+    public long Size { get; set; }
 }

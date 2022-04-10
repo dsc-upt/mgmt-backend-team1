@@ -18,7 +18,7 @@ public class UsersController : Controller
     [HttpPost]
     public async Task<ActionResult<UserResponseView>> Add([FromBody]UserRequestView userRequest)
     {
-        var user = new User()
+        var user = new User
         {
             Id = Guid.NewGuid().ToString(),
             Created = DateTime.UtcNow,

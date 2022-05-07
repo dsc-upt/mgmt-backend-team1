@@ -107,6 +107,7 @@ public class UserProfilesController : Controller
                 Id = userp.Id,
                 User = new UserResponseView
                 {
+                    Id = userp.User.Id,
                     FirstName = userp.User.FirstName,
                     LastName = userp.User.LastName,
                     Email = userp.User.Email,
@@ -142,7 +143,7 @@ public class UserProfilesController : Controller
         var userprofile = await _dbContext.UserProfiles.Include(userprofile => userprofile.User).FirstOrDefaultAsync(entity => entity.Id == id);
         if (userprofile == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User Profile id not found in database");
         }
         
         var teamsview = new List<TeamResponseView>();
@@ -187,10 +188,10 @@ public class UserProfilesController : Controller
     [HttpDelete("{id}")]
     public async Task<ActionResult<UserProfileResponseView>> Delete([FromRoute] string id)
     {
-        var userprofile = await _dbContext.UserProfiles.FirstOrDefaultAsync(entity => entity.Id == id);
+        var userprofile = await _dbContext.UserProfiles.Include(userprofile => userprofile.User).FirstOrDefaultAsync(entity => entity.Id == id);
         if (userprofile == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User Profile id not found in database");
         }
 
         _dbContext.UserProfiles.Remove(userprofile);
@@ -217,6 +218,200 @@ public class UserProfilesController : Controller
         }
         
         return Ok(new UserProfileResponseView()
+        {
+            Id = userprofile.Id,
+            User = new UserResponseView
+            {
+                Id = userprofile.User.Id,
+                FirstName = userprofile.User.FirstName,
+                LastName = userprofile.User.LastName,
+                Email = userprofile.User.Email,
+                Roles = userprofile.User.Roles,
+            },
+            Birthday = userprofile.Birthday,
+            Phone = userprofile.Phone,
+            FacebookLink = userprofile.FacebookLink,
+            PhotoPath = userprofile.Photo.Path,
+            TeamList = teamsview,
+        });
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<UserProfileResponseView>> Update([FromRoute] string id, [FromBody] UserProfileRequestView userprofileview)
+    {
+        var userprofile = await _dbContext.UserProfiles.Include(userprofile => userprofile.User).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (userprofile == null)
+        {
+            return NotFound("User Profile id not found in database");
+        }
+
+        var user = await _dbContext.Users.FirstOrDefaultAsync(entity => entity.Id == userprofileview.UserId);
+        if (user == null)
+        {
+            return NotFound("User id not found in database");
+        }
+
+        var photo = await _dbContext.Files.FirstOrDefaultAsync(entity => entity.Id == userprofileview.PhotoId);
+        if (photo == null)
+        {
+            return NotFound("File id not found in database");
+        }
+        
+        var teams = new List<Team>();
+        foreach (string t in userprofileview.TeamsIds)
+        {
+            var tm = await _dbContext.Teams.FirstOrDefaultAsync(entity => entity.Id == t);
+            if (tm == null)
+            {
+                return NotFound("Team id not found in database");
+            }
+            teams.Add(tm);
+        }
+        
+        userprofile.User = user;
+        userprofile.Teams = teams;
+        userprofile.FacebookLink = userprofileview.FacebookLink;
+        userprofile.Birthday = userprofileview.Birthday;
+        userprofile.Phone = userprofileview.Phone;
+        userprofile.Photo = photo;
+        userprofile.Updated = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+        
+        var teamsview = new List<TeamResponseView>();
+        foreach (var t in userprofile.Teams)
+        {
+            var tview = new TeamResponseView
+            {
+                Id = t.Id,
+                Name = t.Name,
+                GitHubLink = t.GitHubLink,
+                TeamLead = new UserResponseView
+                {
+                    Id = t.TeamLeader.Id,
+                    FirstName = t.TeamLeader.FirstName,
+                    LastName = t.TeamLeader.LastName,
+                    Email = t.TeamLeader.Email,
+                    Roles = t.TeamLeader.Roles,
+                },
+            };
+            teamsview.Add(tview);
+        }
+        return Ok(new UserProfileResponseView
+        {
+            Id = userprofile.Id,
+            User = new UserResponseView
+            {
+                Id = userprofile.User.Id,
+                FirstName = userprofile.User.FirstName,
+                LastName = userprofile.User.LastName,
+                Email = userprofile.User.Email,
+                Roles = userprofile.User.Roles,
+            },
+            Birthday = userprofile.Birthday,
+            Phone = userprofile.Phone,
+            FacebookLink = userprofile.FacebookLink,
+            PhotoPath = userprofile.Photo.Path,
+            TeamList = teamsview,
+        });
+    }
+
+    [HttpPost("{id}/{teamid}")]
+    public async Task<ActionResult<UserProfileResponseView>> AddTeam([FromRoute] string id, [FromRoute] string teamid)
+    {
+        var userprofile = await _dbContext.UserProfiles.Include(userprofile => userprofile.Teams).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (userprofile == null)
+        {
+            return NotFound("User Profile id not found in database");
+        }
+
+        var team = await _dbContext.Teams.FirstOrDefaultAsync(entity => entity.Id == teamid);
+        if (team == null)
+        {
+            return NotFound("Team id not found in database");
+        }
+        
+        userprofile.Teams.Add(team);
+        userprofile.Updated = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+        
+        var teamsview = new List<TeamResponseView>();
+        foreach (var t in userprofile.Teams)
+        {
+            var tview = new TeamResponseView
+            {
+                Id = t.Id,
+                Name = t.Name,
+                GitHubLink = t.GitHubLink,
+                TeamLead = new UserResponseView
+                {
+                    Id = t.TeamLeader.Id,
+                    FirstName = t.TeamLeader.FirstName,
+                    LastName = t.TeamLeader.LastName,
+                    Email = t.TeamLeader.Email,
+                    Roles = t.TeamLeader.Roles,
+                },
+            };
+            teamsview.Add(tview);
+        }
+        return Ok(new UserProfileResponseView
+        {
+            Id = userprofile.Id,
+            User = new UserResponseView
+            {
+                Id = userprofile.User.Id,
+                FirstName = userprofile.User.FirstName,
+                LastName = userprofile.User.LastName,
+                Email = userprofile.User.Email,
+                Roles = userprofile.User.Roles,
+            },
+            Birthday = userprofile.Birthday,
+            Phone = userprofile.Phone,
+            FacebookLink = userprofile.FacebookLink,
+            PhotoPath = userprofile.Photo.Path,
+            TeamList = teamsview,
+        });
+    }
+    
+    [HttpDelete("{id}/{teamid}")]
+    public async Task<ActionResult<UserProfileResponseView>> RemoveTeam([FromRoute] string id, [FromRoute] string teamid)
+    {
+        var userprofile = await _dbContext.UserProfiles.Include(userprofile => userprofile.Teams).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (userprofile == null)
+        {
+            return NotFound("User Profile id not found in database");
+        }
+
+        var team = await _dbContext.Teams.FirstOrDefaultAsync(entity => entity.Id == teamid);
+        if (team == null)
+        {
+            return NotFound("Team id not found in database");
+        }
+        
+        userprofile.Teams.Remove(team);
+        userprofile.Updated = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+        
+        var teamsview = new List<TeamResponseView>();
+        foreach (var t in userprofile.Teams)
+        {
+            var tview = new TeamResponseView
+            {
+                Id = t.Id,
+                Name = t.Name,
+                GitHubLink = t.GitHubLink,
+                TeamLead = new UserResponseView
+                {
+                    Id = t.TeamLeader.Id,
+                    FirstName = t.TeamLeader.FirstName,
+                    LastName = t.TeamLeader.LastName,
+                    Email = t.TeamLeader.Email,
+                    Roles = t.TeamLeader.Roles,
+                },
+            };
+            teamsview.Add(tview);
+        }
+        return Ok(new UserProfileResponseView
         {
             Id = userprofile.Id,
             User = new UserResponseView

@@ -22,7 +22,7 @@ public class TeamsController : Controller
         var teamLead = await _dbContext.Users.FirstOrDefaultAsync(entity => entity.Id == teamview.TeamLeadId);
         if (teamLead == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User id not found in database");
         }
 
         var team = new Team
@@ -80,7 +80,7 @@ public class TeamsController : Controller
         var team = await _dbContext.Teams.Include(team => team.TeamLeader).FirstOrDefaultAsync(entity => entity.Id == id);
         if (team == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("Team id not found in database");
         }
 
         return Ok(new TeamResponseView
@@ -105,7 +105,7 @@ public class TeamsController : Controller
         var team = await _dbContext.Teams.FirstOrDefaultAsync(t => t.Id == id);
         if (team == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("Team idd not found in database");
         }
 
         var result = _dbContext.Teams.Remove(team);
@@ -119,7 +119,7 @@ public class TeamsController : Controller
         var team = await _dbContext.Teams.FirstOrDefaultAsync(t => t.Id == id);
         if (team == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("Team id not found in database");
         }
         team.Updated = DateTime.UtcNow;
         team.Name = teamview.Name;
@@ -127,7 +127,7 @@ public class TeamsController : Controller
         var teamLead = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == teamview.TeamLeadId);
         if (teamLead == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User id not found in database");
         }
 
         team.TeamLeader = teamLead;
@@ -156,12 +156,12 @@ public class TeamsController : Controller
         var team = await _dbContext.Teams.FirstOrDefaultAsync(t => t.Id == id);
         if (team == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("Team id not found in database");
         } 
         var teamLead = await _dbContext.Users.FirstOrDefaultAsync(user => user.Id == teamLeadId);
         if (teamLead == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User id not found in database");
         }
 
         team.TeamLeader = teamLead;

@@ -23,12 +23,12 @@ public class UserProfilesController : Controller
         var user = await _dbContext.Users.FirstOrDefaultAsync(entity => entity.Id == upview.UserId);
         if (user == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User id not found in database");
         }
         var photo = await _dbContext.Files.FirstOrDefaultAsync(entity => entity.Id == upview.PhotoId);
         if (photo == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("File id not found in database");
         }
 
         var teams = new List<Team>();
@@ -37,7 +37,7 @@ public class UserProfilesController : Controller
             var tm = await _dbContext.Teams.FirstOrDefaultAsync(entity => entity.Id == t);
             if (tm == null)
             {
-                return NotFound("Id not found in database");
+                return NotFound("Team id not found in database");
             }
             teams.Add(tm);
         }

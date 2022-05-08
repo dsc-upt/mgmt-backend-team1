@@ -83,8 +83,7 @@ public class ClientsController : Controller
     [HttpGet("{id}")]
     public async Task<ActionResult<ClientResponseView>> GetById([FromRoute] string id)
     {
-        var client = await _appdbcontext.Clients.Include(client => client.ContactPerson)
-            .FirstOrDefaultAsync(entity => entity.Id == id);
+        var client = await _appdbcontext.Clients.Include(client => client.ContactPerson).FirstOrDefaultAsync(entity => entity.Id == id);
         if (client == null)
         {
             return NotFound("Client Id not found!");
@@ -111,7 +110,7 @@ public class ClientsController : Controller
     public async Task<ActionResult<ClientResponseView>> Update([FromBody] ClientRequestView clientview,
         [FromRoute] string id)
     {
-        var client = await _appdbcontext.Clients.FirstOrDefaultAsync(client => client.Id == id);
+        var client = await _appdbcontext.Clients.Include(client => client.ContactPerson).FirstOrDefaultAsync(client => client.Id == id);
         if (client == null)
         {
             return NotFound("Client is not found!");
@@ -152,7 +151,7 @@ public class ClientsController : Controller
     [HttpDelete]
     public async Task<ActionResult<ClientResponseView>> Delete([FromRoute] string id)
     {
-        var client = await _appdbcontext.Clients.FirstOrDefaultAsync(client => client.Id == id);
+        var client = await _appdbcontext.Clients.Include(client => client.ContactPerson).FirstOrDefaultAsync(client => client.Id == id);
         if (client == null)
         {
             return NotFound("Client id not found!");
@@ -167,7 +166,7 @@ public class ClientsController : Controller
     public async Task<ActionResult<ClientResponseView>> ChangeContactPerson([FromRoute] string id,
         [FromRoute] string contactPersonId)
     {
-        var client = await _appdbcontext.Clients.FirstOrDefaultAsync(client => client.Id == id);
+        var client = await _appdbcontext.Clients.Include(client => client.ContactPerson).FirstOrDefaultAsync(client => client.Id == id);
         if (client == null)
         {
             return NotFound("Client Id not found!");

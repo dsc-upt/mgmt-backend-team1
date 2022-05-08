@@ -95,7 +95,7 @@ public class UsersController : Controller
         var user = await _appDbContext.Users.FirstOrDefaultAsync(user => user.Id == id);
         if (user == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User id not found in database");
         }
         
         user.FirstName = userview.FirstName;
@@ -122,7 +122,7 @@ public class UsersController : Controller
         var user = await _appDbContext.Users.FirstOrDefaultAsync(entity => entity.Id == id);
         if (user == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User id not found in database");
         }
         user.Roles.Add(role);
         await _appDbContext.SaveChangesAsync();
@@ -142,7 +142,7 @@ public class UsersController : Controller
         var user = await _appDbContext.Users.FirstOrDefaultAsync(entity => entity.Id == id);
         if (user == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("User id not found in database");
         }
 
         var ok = user.Roles.Find(entity => entity == role);

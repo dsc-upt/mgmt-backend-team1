@@ -107,6 +107,7 @@ public class UserProfilesController : Controller
                 Id = userp.Id,
                 User = new UserResponseView
                 {
+                    Id = userp.User.Id,
                     FirstName = userp.User.FirstName,
                     LastName = userp.User.LastName,
                     Email = userp.User.Email,
@@ -187,7 +188,7 @@ public class UserProfilesController : Controller
     [HttpDelete("{id}")]
     public async Task<ActionResult<UserProfileResponseView>> Delete([FromRoute] string id)
     {
-        var userprofile = await _dbContext.UserProfiles.FirstOrDefaultAsync(entity => entity.Id == id);
+        var userprofile = await _dbContext.UserProfiles.Include(userprofile => userprofile.User).FirstOrDefaultAsync(entity => entity.Id == id);
         if (userprofile == null)
         {
             return NotFound("User Profile id not found in database");
@@ -234,6 +235,7 @@ public class UserProfilesController : Controller
             TeamList = teamsview,
         });
     }
+
     [HttpPatch("{id}")]
     public async Task<ActionResult<UserProfileResponseView>> Update([FromRoute] string id, [FromBody] UserProfileRequestView userprofileview)
     {

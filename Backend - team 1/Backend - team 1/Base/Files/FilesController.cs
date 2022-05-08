@@ -64,7 +64,7 @@ public class FilesController : Controller
         var file = await _dbContext.Files.FirstOrDefaultAsync(entity => entity.Id == id);
         if (file == null)
         {
-            return NotFound("Id not found in database");
+            return NotFound("File id not found in database");
         }
 
         file.Name = fileView.Name;
@@ -72,6 +72,28 @@ public class FilesController : Controller
         file.Extension = fileView.Extension;
         file.Size = fileView.Size;
         file.Updated = DateTime.UtcNow;
+
+        return Ok(new FileResponseView
+        {
+            Id = file.Id,
+            Name = file.Name,
+            Path = file.Path,
+            Extension = file.Extension,
+            Size = file.Size,
+        });
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<FileResponseView>> Delete([FromRoute] string id)
+    {
+        var file = await _dbContext.Files.FirstOrDefaultAsync(entity => entity.Id == id);
+        if (file == null)
+        {
+            return NotFound("File id not found");
+        }
+
+        _dbContext.Files.Remove(file);
+        await _dbContext.SaveChangesAsync();
 
         return Ok(new FileResponseView
         {

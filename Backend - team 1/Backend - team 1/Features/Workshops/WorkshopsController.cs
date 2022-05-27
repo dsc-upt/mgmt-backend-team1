@@ -104,7 +104,246 @@ public class WorkshopsController : Controller
             Capacity = workshop.Capacity,
             Location = workshop.Location,
             PresentationPath = workshop.Presentation.Path,
-            Participants = participantsview,
+            Participants = participantsview
+        });
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<WorkshopResponseView>> Get()
+    {
+        
+        
+        return Ok(
+            _dbContext.Workshops.Select(
+                workshop => new WorkshopResponseView
+                {
+                    Id = workshop.Id,
+                    Topic = workshop.Topic,
+                    Trainer = new UserResponseView
+                    {
+                        Id = workshop.Trainer.Id,
+                        FirstName = workshop.Trainer.FirstName,
+                        LastName = workshop.Trainer.LastName,
+                        Email = workshop.Trainer.Email,
+                        Roles = workshop.Trainer.Roles,
+                    },
+                    Description = workshop.Description,
+                    Coverpath = workshop.CoverImage.Path,
+                    DateStart = workshop.DateStart,
+                    DateEnd = workshop.DateEnd,
+                    MaxCapacity = workshop.MaxCapacity,
+                    Capacity = workshop.Capacity,
+                    Location = workshop.Location,
+                    PresentationPath = workshop.Presentation.Path,
+                    Participants = workshop.Participants.Select(
+                        participant => new UserResponseView
+                        {
+                            Id = participant.Id,
+                            FirstName = participant.FirstName,
+                            LastName = participant.LastName,
+                            Email = participant.Email,
+                            Roles = participant.Roles,
+                        }
+                        ).ToArray()
+                }
+                ).ToList());
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<WorkshopResponseView>> GetById([FromRoute] string id)
+    {
+        var workshop = await _dbContext.Workshops.Include(workshop => workshop.Trainer).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (workshop == null)
+        {
+            return NotFound("Workshop id not found in database");
+        }
+
+        return Ok(new WorkshopResponseView
+        {
+            Id = workshop.Id,
+            Topic = workshop.Topic,
+            Trainer = new UserResponseView
+            {
+                Id = workshop.Trainer.Id,
+                FirstName = workshop.Trainer.FirstName,
+                LastName = workshop.Trainer.LastName,
+                Email = workshop.Trainer.Email,
+                Roles = workshop.Trainer.Roles,
+            },
+            Description = workshop.Description,
+            Coverpath = workshop.CoverImage.Path,
+            DateStart = workshop.DateStart,
+            DateEnd = workshop.DateEnd,
+            MaxCapacity = workshop.MaxCapacity,
+            Capacity = workshop.Capacity,
+            Location = workshop.Location,
+            PresentationPath = workshop.Presentation.Path,
+            Participants = workshop.Participants.Select(
+                participant => new UserResponseView
+                {
+                    Id = participant.Id,
+                    FirstName = participant.FirstName,
+                    LastName = participant.LastName,
+                    Email = participant.Email,
+                    Roles = participant.Roles,
+                }
+            ).ToArray()
+        });
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<Workshop>> Delete([FromRoute] string id)
+    {
+        var workshop = await _dbContext.Workshops.Include(workshop => workshop.Trainer).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (workshop == null)
+        {
+            return NotFound("Workshop id not found in database");
+        }
+
+        _dbContext.Workshops.Remove(workshop);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(workshop);
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<WorkshopResponseView>> Update([FromRoute] string id, [FromBody] WorkshopRequestView workshopView)
+    {
+        var workshop = await _dbContext.Workshops.Include(workshop => workshop.Trainer).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (workshop == null)
+        {
+            return NotFound("Workshop id not found in database");
+        }
+        
+        var trainer = await _dbContext.Users.FirstOrDefaultAsync(entity => entity.Id == workshopView.TrainerId);
+        if (trainer == null)
+        {
+            return NotFound("Trainer id not found");
+        }
+
+        var cover = await _dbContext.Files.FirstOrDefaultAsync(entity => entity.Id == workshopView.CoverId);
+        if (cover == null)
+        {
+            return NotFound("Cover Image id not found");
+        }
+
+        var presentation = await _dbContext.Files.FirstOrDefaultAsync(entity => entity.Id == workshopView.PresentationId);
+        if (presentation == null)
+        {
+            return NotFound("Presentation id not found");
+        }
+
+        var participants = new User[workshopView.MaxCapacity];
+        int count = 0;
+        foreach (string wsId in workshopView.UsersIds)
+        {
+            var participant = await _dbContext.Users.FirstOrDefaultAsync(entity => entity.Id == wsId);
+            if (participant == null)
+            {
+                return NotFound("User id not found");
+            }
+
+            participants[count++] = participant;
+        }
+
+        workshop.Trainer = trainer;
+        workshop.Topic = workshopView.Topic;
+        workshop.Description = workshopView.Description;
+        workshop.CoverImage = cover;
+        workshop.DateStart = workshopView.DateStart;
+        workshop.DateEnd = workshopView.DateEnd;
+        workshop.Capacity = count;
+        workshop.MaxCapacity = workshopView.MaxCapacity;
+        workshop.Location = workshopView.Location;
+        workshop.Participants = participants;
+        workshop.Presentation = presentation;
+        workshop.Updated = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+        
+        return Ok(new WorkshopResponseView
+        {
+            Id = workshop.Id,
+            Topic = workshop.Topic,
+            Trainer = new UserResponseView
+            {
+                Id = workshop.Trainer.Id,
+                FirstName = workshop.Trainer.FirstName,
+                LastName = workshop.Trainer.LastName,
+                Email = workshop.Trainer.Email,
+                Roles = workshop.Trainer.Roles,
+            },
+            Description = workshop.Description,
+            Coverpath = workshop.CoverImage.Path,
+            DateStart = workshop.DateStart,
+            DateEnd = workshop.DateEnd,
+            MaxCapacity = workshop.MaxCapacity,
+            Capacity = workshop.Capacity,
+            Location = workshop.Location,
+            PresentationPath = workshop.Presentation.Path,
+            Participants = workshop.Participants.Select(
+                participant => new UserResponseView
+                {
+                    Id = participant.Id,
+                    FirstName = participant.FirstName,
+                    LastName = participant.LastName,
+                    Email = participant.Email,
+                    Roles = participant.Roles,
+                }
+            ).ToArray()
+        });
+    }
+
+    [HttpPatch("{id}/Trainer")]
+    public async Task<ActionResult<WorkshopResponseView>> ChangeTrainer([FromRoute] string id, [FromBody] string trainerId)
+    {
+        var trainer = await _dbContext.Users.FirstOrDefaultAsync(entity => entity.Id == trainerId);
+        if (trainer == null)
+        {
+            return NotFound("Trainer id not found in database");
+        }
+        
+        var workshop = await _dbContext.Workshops.Include(workshop => workshop.Trainer).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (workshop == null)
+        {
+            return NotFound("Workshop id not found in database");
+        }
+
+        workshop.Trainer = trainer;
+        workshop.Updated = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new WorkshopResponseView
+        {
+            Id = workshop.Id,
+            Topic = workshop.Topic,
+            Trainer = new UserResponseView
+            {
+                Id = workshop.Trainer.Id,
+                FirstName = workshop.Trainer.FirstName,
+                LastName = workshop.Trainer.LastName,
+                Email = workshop.Trainer.Email,
+                Roles = workshop.Trainer.Roles,
+            },
+            Description = workshop.Description,
+            Coverpath = workshop.CoverImage.Path,
+            DateStart = workshop.DateStart,
+            DateEnd = workshop.DateEnd,
+            MaxCapacity = workshop.MaxCapacity,
+            Capacity = workshop.Capacity,
+            Location = workshop.Location,
+            PresentationPath = workshop.Presentation.Path,
+            Participants = workshop.Participants.Select(
+                participant => new UserResponseView
+                {
+                    Id = participant.Id,
+                    FirstName = participant.FirstName,
+                    LastName = participant.LastName,
+                    Email = participant.Email,
+                    Roles = participant.Roles,
+                }
+            ).ToArray()
         });
     }
 }

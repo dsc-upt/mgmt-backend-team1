@@ -111,8 +111,6 @@ public class WorkshopsController : Controller
     [HttpGet]
     public async Task<ActionResult<WorkshopResponseView>> Get()
     {
-        
-        
         return Ok(
             _dbContext.Workshops.Select(
                 workshop => new WorkshopResponseView
@@ -294,7 +292,7 @@ public class WorkshopsController : Controller
         });
     }
 
-    [HttpPatch("{id}/Trainer")]
+    [HttpPatch("{id}/ChangeTrainer")]
     public async Task<ActionResult<WorkshopResponseView>> ChangeTrainer([FromRoute] string id, [FromBody] string trainerId)
     {
         var trainer = await _dbContext.Users.FirstOrDefaultAsync(entity => entity.Id == trainerId);
@@ -314,6 +312,122 @@ public class WorkshopsController : Controller
 
         await _dbContext.SaveChangesAsync();
 
+        return Ok(new WorkshopResponseView
+        {
+            Id = workshop.Id,
+            Topic = workshop.Topic,
+            Trainer = new UserResponseView
+            {
+                Id = workshop.Trainer.Id,
+                FirstName = workshop.Trainer.FirstName,
+                LastName = workshop.Trainer.LastName,
+                Email = workshop.Trainer.Email,
+                Roles = workshop.Trainer.Roles,
+            },
+            Description = workshop.Description,
+            Coverpath = workshop.CoverImage.Path,
+            DateStart = workshop.DateStart,
+            DateEnd = workshop.DateEnd,
+            MaxCapacity = workshop.MaxCapacity,
+            Capacity = workshop.Capacity,
+            Location = workshop.Location,
+            PresentationPath = workshop.Presentation.Path,
+            Participants = workshop.Participants.Select(
+                participant => new UserResponseView
+                {
+                    Id = participant.Id,
+                    FirstName = participant.FirstName,
+                    LastName = participant.LastName,
+                    Email = participant.Email,
+                    Roles = participant.Roles,
+                }
+            ).ToArray()
+        });
+    }
+
+    [HttpPost("{id}/{participantid}")]
+    public async Task<ActionResult<WorkshopResponseView>> AddParticipant([FromRoute] string id, [FromRoute] string participantid)
+    {
+        var workshop = await _dbContext.Workshops.Include(workshop => workshop.Trainer).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (workshop == null)
+        {
+            return NotFound("Workshop id not found in dataabse");
+        }
+
+        var participant = await _dbContext.Users.FirstOrDefaultAsync(entity => entity.Id == participantid);
+        if (participant == null)
+        {
+            return NotFound("Participant id not found in database");
+        }
+
+        if (workshop.Capacity >= workshop.MaxCapacity - 1)
+        {
+            throw new Exception("Participant cannot be added");
+        }
+
+        workshop.Participants[workshop.Capacity++] = participant;
+        workshop.Updated = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new WorkshopResponseView
+        {
+            Id = workshop.Id,
+            Topic = workshop.Topic,
+            Trainer = new UserResponseView
+            {
+                Id = workshop.Trainer.Id,
+                FirstName = workshop.Trainer.FirstName,
+                LastName = workshop.Trainer.LastName,
+                Email = workshop.Trainer.Email,
+                Roles = workshop.Trainer.Roles,
+            },
+            Description = workshop.Description,
+            Coverpath = workshop.CoverImage.Path,
+            DateStart = workshop.DateStart,
+            DateEnd = workshop.DateEnd,
+            MaxCapacity = workshop.MaxCapacity,
+            Capacity = workshop.Capacity,
+            Location = workshop.Location,
+            PresentationPath = workshop.Presentation.Path,
+            Participants = workshop.Participants.Select(
+                participant => new UserResponseView
+                {
+                    Id = participant.Id,
+                    FirstName = participant.FirstName,
+                    LastName = participant.LastName,
+                    Email = participant.Email,
+                    Roles = participant.Roles,
+                }
+            ).ToArray()
+        });
+    }
+
+    [HttpDelete("{id}/{participantid}")]
+    public async Task<ActionResult<WorkshopResponseView>> RemoveParticipant([FromRoute] string id, [FromRoute] string participantid)
+    {
+        var workshop = await _dbContext.Workshops.Include(workshop => workshop.Trainer).FirstOrDefaultAsync(entity => entity.Id == id);
+        if (workshop == null)
+        {
+            return NotFound("Workshop id not found in dataabse");
+        }
+
+        for (int i = 0; i < workshop.Capacity; i++)
+        {
+            if (workshop.Participants[i].Id == participantid)
+            {
+                for (int j = i; j < workshop.Capacity; j++)
+                {
+                    workshop.Participants[j] = workshop.Participants[j + 1];
+                }
+
+                workshop.Capacity--;
+                
+                break;
+            }
+        }
+
+        await _dbContext.SaveChangesAsync();
+        
         return Ok(new WorkshopResponseView
         {
             Id = workshop.Id,
